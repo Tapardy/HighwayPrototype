@@ -644,7 +644,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7676cc6a67b1a6e489740da01b819a15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defaultSpeed: 10
+  defaultSpeed: 70
   status: 1
 --- !u!65 &385346639
 BoxCollider:
@@ -1095,7 +1095,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7676cc6a67b1a6e489740da01b819a15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defaultSpeed: 10
+  defaultSpeed: 60
   status: 1
 --- !u!65 &975017768
 BoxCollider:

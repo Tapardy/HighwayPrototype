@@ -25,6 +25,7 @@ public class CarSpawnController : MonoBehaviour
         if(Time.time > spawnTime)
         {
             InstantiateCar();
+            spawnDelay = Random.Range(1f, 2f);
             spawnTime = Time.time + spawnDelay;
         }
     }
@@ -43,4 +44,5 @@ public class CarSpawnController : MonoBehaviour
 
         carCount++;
     }
+
 }

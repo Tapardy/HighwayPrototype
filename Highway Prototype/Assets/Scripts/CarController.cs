@@ -17,18 +17,18 @@ public class CarController : MonoBehaviour
 
     private int id;
 
-    private float speedShift = 1f;
+    private float speedShift = 5f;
 
     private Vector3 targetPosition;
 
-    private float distanceDelay = 0.3f;
+    private float distanceDelay = 0.2f;
     private float nextCheck;
     private float lastDistance;
 
     // Start is called before the first frame update
     void Start()
     {
-        speed = Random.Range(80f, 90f);
+        speed = Mathf.Round(Random.Range(80f, 90f));
         speedLimit = speed;
         targetSpeed = speed;
         nextCheck = Time.time;
@@ -43,11 +43,11 @@ public class CarController : MonoBehaviour
             $"Target Speed: {targetSpeed}\n" +
             $"Distance to Next: {CheckDistanceInfront()}"; 
 
-        if (Time.time > nextCheck || appliedSpeedLimit)
+        if (Time.time >= nextCheck || appliedSpeedLimit)
         {
             float distance = CheckDistanceInfront();
 
-            if (distance > 15f && distance <= 40f)
+            if (distance > 30f && distance <= 60f)
             {
                 if(distance < lastDistance)
                 {
@@ -56,11 +56,12 @@ public class CarController : MonoBehaviour
                         targetSpeed = prevTargetSpeed;
                         appliedSpeedLimit = false;
                     }
-                    targetSpeed -= 15f;
+                    targetSpeed -= 20f;
+                    if (targetSpeed <= 0f) targetSpeed = 0f;
                     Debug.Log($"CAR {id} SLOWING DOWN to {targetSpeed}");
                 }
                 lastDistance = distance;
-            } else if(distance > 0f && distance <= 15f)
+            } else if(distance > 0f && distance <= 30f)
             {
                 if (distance < lastDistance)
                 {
@@ -69,7 +70,8 @@ public class CarController : MonoBehaviour
                         targetSpeed = prevTargetSpeed;
                         appliedSpeedLimit = false;
                     }
-                    targetSpeed -= 25f;
+                    targetSpeed -= 35f;
+                    if (targetSpeed <= 0f) targetSpeed = 0f;
                     Debug.Log($"CAR {id} RAPIDLY BREAKING to {targetSpeed}");
                 }
                 lastDistance = distance;
