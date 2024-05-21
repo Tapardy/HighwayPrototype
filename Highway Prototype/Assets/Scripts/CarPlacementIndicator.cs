@@ -6,6 +6,8 @@ public class CarPlacementIndicator : MonoBehaviour
     private GameObject ghostObject;
     public GameObject ghostObjectPrefab;
 
+    private bool locationCreated = false;
+    private bool locationReached = false;
     public string roadTag = "Road";
     public float moveSpeed = 5f;
     public float rotationSpeed = 5f;
@@ -25,6 +27,8 @@ public class CarPlacementIndicator : MonoBehaviour
             {
                 if (Physics.Raycast(ray, out hit))
                 {
+                    locationCreated = true;
+                    locationReached = false;
                     targetPosition = hit.point;
                 }
             }
@@ -41,12 +45,18 @@ public class CarPlacementIndicator : MonoBehaviour
                 }
             }
 
-            MoveAndRotateCar();
+            if (locationCreated)
+            {
+                MoveAndRotateCar();
+            }
+
     }
     
 
     void MoveAndRotateCar()
     {
+        if (locationReached) return;
+
         Vector3 direction = (targetPosition - transform.position).normalized;
         float distance = Vector3.Distance(transform.position, targetPosition);
 
@@ -67,6 +77,11 @@ public class CarPlacementIndicator : MonoBehaviour
             {
                 transform.position += transform.forward * moveSpeed * Time.deltaTime;
             }
+        }
+        else
+        {
+            locationReached = true;
+            locationCreated = false;
         }
     }
 }
