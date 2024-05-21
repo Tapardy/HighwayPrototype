@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class CarPlacementIndicator : MonoBehaviour
@@ -6,8 +7,7 @@ public class CarPlacementIndicator : MonoBehaviour
     private GameObject ghostObject;
     public GameObject ghostObjectPrefab;
 
-    private bool locationCreated = false;
-    private bool locationReached = false;
+    private bool locationReached = true;
     public string roadTag = "Road";
     public float moveSpeed = 5f;
     public float rotationSpeed = 5f;
@@ -27,7 +27,6 @@ public class CarPlacementIndicator : MonoBehaviour
             {
                 if (Physics.Raycast(ray, out hit))
                 {
-                    locationCreated = true;
                     locationReached = false;
                     targetPosition = hit.point;
                 }
@@ -44,15 +43,24 @@ public class CarPlacementIndicator : MonoBehaviour
                     ghostObject.transform.position = hit.point;
                 }
             }
-
-            if (locationCreated)
-            {
-                MoveAndRotateCar();
-            }
-
+            
+            RotateGhostObject();
+            MoveAndRotateCar();
     }
     
+    void RotateGhostObject()
+    {
+            if (Input.GetAxis("Mouse ScrollWheel") > 0)
+            {
+                ghostObject.transform.Rotate(Vector3.up * 5f, Space.Self);
+            }
 
+            if (Input.GetAxis("Mouse ScrollWheel") < 0)
+            {
+                ghostObject.transform.Rotate(Vector3.down * 5f, Space.Self);
+            }
+    }
+    
     void MoveAndRotateCar()
     {
         if (locationReached) return;
@@ -81,7 +89,6 @@ public class CarPlacementIndicator : MonoBehaviour
         else
         {
             locationReached = true;
-            locationCreated = false;
         }
     }
 }
