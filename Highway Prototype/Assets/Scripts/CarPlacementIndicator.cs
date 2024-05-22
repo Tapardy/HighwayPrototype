@@ -16,8 +16,8 @@ public class CarPlacementIndicator : MonoBehaviour
     [SerializeField] private GameObject ghostObjectPrefab;
     [SerializeField] private string roadTag = "Road";
     [SerializeField] private float moveSpeed = 5f;
-    [SerializeField] private float rotationSpeed = 5f;
-    [SerializeField] private float stopDistance = 0.1f;
+    [SerializeField] private float rotationSpeed = 10f;
+    [SerializeField] private float stopDistance = 1f;
     [SerializeField] private Button toggleButton;
     [SerializeField] private TMP_Text buttonText;
 
