@@ -1,28 +1,32 @@
 using TMPro;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class CarPlacementIndicator : MonoBehaviour
 {
-    Vector3 targetPosition;
+    private Vector3 targetPosition;
     private GameObject ghostObject;
-    public GameObject ghostObjectPrefab;
-
+    private Quaternion ghostRotationSnapshot;
     private bool isPlacementEnabled = false;
     private bool locationReached = true;
-    public string roadTag = "Road";
-    public float moveSpeed = 5f;
-    public float rotationSpeed = 5f;
-    public float stopDistance = 0.1f;
 
-    public Button toggleButton;
-    public TMP_Text buttonText;
+    [SerializeField] private Material colMat;
+    [SerializeField] private GameObject ghostObjectPrefab;
+    [SerializeField] private string roadTag = "Road";
+    [SerializeField] private float moveSpeed = 5f;
+    [SerializeField] private float rotationSpeed = 5f;
+    [SerializeField] private float stopDistance = 0.1f;
+    [SerializeField] private Button toggleButton;
+    [SerializeField] private TMP_Text buttonText;
 
     void Start()
     {
         targetPosition = transform.position;
         toggleButton.onClick.AddListener(TogglePlacement);
+
+        AdjustGhostOpacity(ghostObjectPrefab);
     }
 
     void Update()
@@ -38,6 +42,11 @@ public class CarPlacementIndicator : MonoBehaviour
                 {
                     locationReached = false;
                     targetPosition = hit.point;
+
+                    if (ghostObject != null)
+                    {
+                        ghostRotationSnapshot = ghostObject.transform.rotation;
+                    }
                 }
             }
 
@@ -53,13 +62,18 @@ public class CarPlacementIndicator : MonoBehaviour
                 }
             }
 
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                TogglePlacement();
+            }
+
             RotateGhostObject();
         }
 
         MoveAndRotateCar();
     }
 
-    void RotateGhostObject()
+    private void RotateGhostObject()
     {
         if (ghostObject != null)
         {
@@ -67,6 +81,7 @@ public class CarPlacementIndicator : MonoBehaviour
             {
                 ghostObject.transform.Rotate(Vector3.up * 5f, Space.Self);
             }
+
             if (Input.GetAxis("Mouse ScrollWheel") < 0)
             {
                 ghostObject.transform.Rotate(Vector3.down * 5f, Space.Self);
@@ -74,7 +89,7 @@ public class CarPlacementIndicator : MonoBehaviour
         }
     }
 
-    void MoveAndRotateCar()
+    private void MoveAndRotateCar()
     {
         if (locationReached) return;
 
@@ -101,23 +116,48 @@ public class CarPlacementIndicator : MonoBehaviour
         }
         else
         {
-            locationReached = true;
+            transform.rotation = Quaternion.RotateTowards(transform.rotation, ghostRotationSnapshot,
+                (rotationSpeed * 5) * Time.deltaTime);
+
+            if (Quaternion.Angle(transform.rotation, ghostRotationSnapshot) < 0.1f)
+            {
+                locationReached = true;
+            }
         }
     }
 
-    void TogglePlacement()
+    private void TogglePlacement()
     {
         isPlacementEnabled = !isPlacementEnabled;
 
         if (isPlacementEnabled)
         {
             buttonText.text = "Exit placement mode";
-            ghostObject.SetActive(true);
+            if (ghostObject != null)
+            {
+                ghostObject.SetActive(true);
+            }
         }
         else
         {
             buttonText.text = "Enter placement mode";
-            ghostObject.SetActive(false);
+            if (ghostObject != null)
+            {
+                ghostObject.SetActive(false);
+            }
+        }
+    }
+
+    private void AdjustGhostOpacity(GameObject ghostObject)
+    {
+        if (ghostObject != null)
+        {
+            MeshRenderer[] renderers = ghostObject.GetComponentsInChildren<MeshRenderer>();
+            foreach (MeshRenderer ren in renderers)
+            {
+                if (ren.GetComponent<TextMeshPro>()) return;
+                ren.material = colMat;
+            }
         }
     }
 }
