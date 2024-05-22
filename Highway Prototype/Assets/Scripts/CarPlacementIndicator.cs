@@ -1,5 +1,7 @@
-using Unity.VisualScripting;
+using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class CarPlacementIndicator : MonoBehaviour
 {
@@ -7,23 +9,30 @@ public class CarPlacementIndicator : MonoBehaviour
     private GameObject ghostObject;
     public GameObject ghostObjectPrefab;
 
+    private bool isPlacementEnabled = false;
     private bool locationReached = true;
     public string roadTag = "Road";
     public float moveSpeed = 5f;
     public float rotationSpeed = 5f;
     public float stopDistance = 0.1f;
 
+    public Button toggleButton;
+    public TMP_Text buttonText;
+
     void Start()
     {
         targetPosition = transform.position;
+        toggleButton.onClick.AddListener(TogglePlacement);
     }
 
     void Update()
     {
+        if (isPlacementEnabled)
+        {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
-            
-            if (Input.GetMouseButtonDown(0))
+
+            if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject())
             {
                 if (Physics.Raycast(ray, out hit))
                 {
@@ -43,24 +52,28 @@ public class CarPlacementIndicator : MonoBehaviour
                     ghostObject.transform.position = hit.point;
                 }
             }
-            
+
             RotateGhostObject();
-            MoveAndRotateCar();
+        }
+
+        MoveAndRotateCar();
     }
-    
+
     void RotateGhostObject()
     {
+        if (ghostObject != null)
+        {
             if (Input.GetAxis("Mouse ScrollWheel") > 0)
             {
                 ghostObject.transform.Rotate(Vector3.up * 5f, Space.Self);
             }
-
             if (Input.GetAxis("Mouse ScrollWheel") < 0)
             {
                 ghostObject.transform.Rotate(Vector3.down * 5f, Space.Self);
             }
+        }
     }
-    
+
     void MoveAndRotateCar()
     {
         if (locationReached) return;
@@ -89,6 +102,22 @@ public class CarPlacementIndicator : MonoBehaviour
         else
         {
             locationReached = true;
+        }
+    }
+
+    void TogglePlacement()
+    {
+        isPlacementEnabled = !isPlacementEnabled;
+
+        if (isPlacementEnabled)
+        {
+            buttonText.text = "Exit placement mode";
+            ghostObject.SetActive(true);
+        }
+        else
+        {
+            buttonText.text = "Enter placement mode";
+            ghostObject.SetActive(false);
         }
     }
 }
